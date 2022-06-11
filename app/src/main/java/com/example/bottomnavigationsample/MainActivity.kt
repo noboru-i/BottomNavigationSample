@@ -1,14 +1,12 @@
 package com.example.bottomnavigationsample
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.*
 import com.example.bottomnavigationsample.databinding.ActivityMainBinding
 import com.example.bottomnavigationsample.ui.dialog.NormalDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -42,6 +40,11 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
+        // `setupWithNavController` set it, but we need analytics event
+        binding.navView.setOnItemSelectedListener { item ->
+            Log.d(MainActivity::class.java.simpleName, "on click ${item.title}")
+            NavigationUI.onNavDestinationSelected(item, navController)
+        }
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
