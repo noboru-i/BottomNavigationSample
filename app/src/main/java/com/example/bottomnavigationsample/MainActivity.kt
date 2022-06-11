@@ -65,7 +65,9 @@ class MainActivity : AppCompatActivity() {
             }
         onBackPressedDispatcher.addCallback(this, callback)
         navController.addOnDestinationChangedListener { controller, _, _ ->
-            callback.isEnabled = (controller.previousBackStackEntry == null)
+            val isTopLevelDestination =
+                appBarConfiguration.topLevelDestinations.contains(controller.currentDestination?.id)
+            callback.isEnabled = isTopLevelDestination
         }
     }
 }
