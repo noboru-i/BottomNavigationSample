@@ -1,6 +1,7 @@
 package com.example.bottomnavigationsample
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -9,6 +10,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.bottomnavigationsample.databinding.ActivityMainBinding
+import com.example.bottomnavigationsample.ui.dialog.NormalDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +27,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupNavigation()
+        setupBackConfirm()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration)
+    }
+
+    private fun setupNavigation() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -40,7 +51,18 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration)
+    private fun setupBackConfirm() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    NormalDialogFragment("Are you sure to close the app?") {
+                        finish()
+                    }.show(supportFragmentManager, NormalDialogFragment::getTag.name)
+                }
+            }
+        onBackPressedDispatcher.addCallback(this, callback)
+        navController.addOnDestinationChangedListener { controller, _, _ ->
+            callback.isEnabled = (controller.previousBackStackEntry == null)
+        }
     }
 }
